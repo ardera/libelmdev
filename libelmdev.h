@@ -6,10 +6,24 @@
 #define ELM327_LINEFEEDS_OFF	"AT L0"
 #define ELM327_EOC      		"\r\n"
 
-#define ELM327_NODATA   "NODATA"
-#define ELM327_ERROR    "ERROR"
-#define ELM327_OK       "OK"
-#define ELM327_NOCONN   "UNABLE TO CONNECT"
+#define ELM327_OK       		"OK"				// command successfully executed
+#define ELM327_INVALID			"?"					// ELM could not understand the command
+#define ELM327_ACT_ALERT		"ACT ALERT"			// no activity for the last 19 minutes, going into low power mode soon
+#define ELM327_BUFFER_FULL		"BUFFER FULL"		// ELM TX Buffer full
+#define ELM327_BUS_BUSY			"BUS BUSY"			// CAN bus was to busy to request PID
+#define ELM327_BUS_ERROR		"BUS ERROR"			// Generic bus error.
+#define ELM327_CAN_ERROR		"CAN ERROR"			// Generic CAN error. (Incorrect CAN baudrate, etc)
+#define ELM327_DATA_ERROR		"DATA ERROR"		// Vehicle replied with invalid data (maybe checksum error)
+#define ELM327_LINE_DATA_ERROR	"<DATA ERROR"		// A Data error ocurred in this exact line
+#define ELM327_FEEDBACK_ERROR	"FB ERROR"			
+#define ELM327_LOW_POWER_ALERT	"LP ALERT"			// ELM is going into low power mode in 2 seconds
+#define ELM327_LOW_VOLTAGE_RESET	"LV RESET"			// ELM was undervolted & shut down.
+#define ELM327_NO_DATA   		"NO DATA"			// protocol known, but OBDII port didn't reply to PID request
+#define ELM327_LINE_RX_ERROR	"<RX ERROR"			// RX error in this line
+#define ELM327_STOPPED			"STOPPED"			// ELM was interrupted by GPIO
+#define ELM327_NOCONN   		"UNABLE TO CONNECT"	// ELM couldn't communicate with OBD port with any protocol
+#define ELM327_SEARCHING		"SEARCHING..."		// ELM is trying to find out which protocol to use
+
 
 #define OBDII_PID_SUPP1                 	0x00
 #define OBDII_PID_ENGINE_LOAD               0x04
@@ -46,13 +60,35 @@
 #define OBDII_PID_ACTUAL_PERCENT_TORQUE		0x62
 #define OBDII_PID_REFERENCE_TORQUE			0x63
 
+enum elm_errno {
+	ELM_ERRNO_NONE,
+	ELM_ERRNO_OK,
+	ELM_ERRNO_INVALID,
+	ELM_ERRNO_ACT_ALERT,
+	ELM_ERRNO_BUFFER_FULL,
+	ELM_ERRNO_BUS_BUSY,
+	ELM_ERRNO_BUS_ERROR,
+	ELM_ERRNO_CAN_ERROR,
+	ELM_ERRNO_DATA_ERROR,
+	ELM_ERRNO_LINE_DATA_ERROR,
+	ELM_ERRNO_FEEDBACK_ERROR,
+	ELM_ERRNO_LOW_POWER_ALERT,
+	ELM_ERRNO_LOW_VOLTAGE_RESET,
+	ELM_ERRNO_NO_DATA,
+	ELM_ERRNO_LINE_RX_ERROR,
+	ELM_ERRNO_STOPPED,
+	ELM_ERRNO_NOCONN,
+	ELM_ERRNO_SEARCHING
+};
+
 struct elmdev {
 	char version[64];
+	uint32_t supported_pids[8];
 	struct termios tty;
 	struct timespec timeout;
 	fd_set fdset;
 	int fd;
 	int baudrate;
 	bool is_online;
-	
+	enum elm_errno elm_errno;
 };
