@@ -15,7 +15,7 @@
 #include <time.h>
 #include <unistd.h>
 
-#include "libelmdev2.h"
+#include "libelmdev.h"
 
 inline speed_t serialSpeedFromBaudrate(int baudrate) {
 	switch (baudrate) {
